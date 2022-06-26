@@ -37,6 +37,24 @@ RSpec.describe HashPivot do
     # rubocop:enable RSpec/ExampleLength
 
     # rubocop:disable RSpec/ExampleLength
+
+    it 'grouped by team and pivoted in role without pivot_kinds' do
+      expect(
+        described_class.pivot(data, :role, :team, nil)
+      ).to eq [
+        { role: 'guest',
+          'rabbit' => [
+            { id: 1, role: 'guest', team: 'rabbit', age: 1 },
+            { id: 3, team: 'rabbit', role: 'guest', age: 3 }
+          ],
+          'mouse' => [{ id: 2, team: 'mouse', role: 'guest', age: 2 }] },
+        { role: 'admin',
+          'mouse' => [{ id: 4, team: 'mouse', role: 'admin', age: 4 }] }
+      ]
+    end
+    # rubocop:enable RSpec/ExampleLength
+
+    # rubocop:disable RSpec/ExampleLength
     it 'output sumed age of grouped by team and pivoted in role' do
       expect(
         described_class.pivot(data, :role, :team, %w[rabbit mouse]) { |a| a.sum { |b| b[:age] } }
@@ -82,6 +100,25 @@ RSpec.describe HashPivot do
     # rubocop:enable RSpec/ExampleLength
 
     # rubocop:disable RSpec/ExampleLength
+
+    it 'grouped by team and pivoted in role without pivot_kinds' do
+      expect(
+        described_class.pivot(data, :role, :team, nil,
+                              repository: HashPivot::Repository::StructRepository)
+      ).to eq [
+        { role: 'guest',
+          'rabbit' => [
+            { id: 1, role: 'guest', team: 'rabbit', age: 1 },
+            { id: 3, team: 'rabbit', role: 'guest', age: 3 }
+          ],
+          'mouse' => [{ id: 2, team: 'mouse', role: 'guest', age: 2 }] },
+        { role: 'admin',
+          'mouse' => [{ id: 4, team: 'mouse', role: 'admin', age: 4 }] }
+      ]
+    end
+    # rubocop:enable RSpec/ExampleLength
+
+    # rubocop:disable RSpec/ExampleLength
     it 'output summed age of grouped by team and pivoted in role' do
       expect(
         described_class.pivot(data, :role, :team, %w[rabbit mouse],
@@ -102,10 +139,11 @@ RSpec.describe HashPivot do
     let(:data) { HashPivotUser.all }
 
     before do
-      create(:hash_pivot_user, role: 'guest', team: 'rabbit', age: 1)
-      create(:hash_pivot_user, role: 'guest', team: 'mouse', age: 2)
-      create(:hash_pivot_user, role: 'guest', team: 'rabbit', age: 3)
-      create(:hash_pivot_user, role: 'admin', team: 'mouse', age: 4)
+      HashPivotUser.destroy_all
+      create(:hash_pivot_user, id: 1, role: 'guest', team: 'rabbit', age: 1)
+      create(:hash_pivot_user, id: 2, role: 'guest', team: 'mouse', age: 2)
+      create(:hash_pivot_user, id: 3, role: 'guest', team: 'rabbit', age: 3)
+      create(:hash_pivot_user, id: 4, role: 'admin', team: 'mouse', age: 4)
     end
 
     after { HashPivotUser.destroy_all }
@@ -125,6 +163,25 @@ RSpec.describe HashPivot do
           'mouse' => [{ id: 2, team: 'mouse', role: 'guest', age: 2 }] },
         { role: 'admin',
           'rabbit' => [],
+          'mouse' => [{ id: 4, team: 'mouse', role: 'admin', age: 4 }] }
+      ]
+    end
+    # rubocop:enable RSpec/ExampleLength
+
+    # rubocop:disable RSpec/ExampleLength
+
+    it 'output grouped by team and pivoted in role without pivot_kinds' do
+      expect(
+        described_class.pivot(data, :role, :team, nil,
+                              repository: HashPivot::Repository::ActiveRecordRepository)
+      ).to eq [
+        { role: 'guest',
+          'rabbit' => [
+            { id: 1, role: 'guest', team: 'rabbit', age: 1 },
+            { id: 3, team: 'rabbit', role: 'guest', age: 3 }
+          ],
+          'mouse' => [{ id: 2, team: 'mouse', role: 'guest', age: 2 }] },
+        { role: 'admin',
           'mouse' => [{ id: 4, team: 'mouse', role: 'admin', age: 4 }] }
       ]
     end

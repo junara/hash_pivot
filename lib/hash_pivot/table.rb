@@ -25,6 +25,7 @@ module HashPivot
     end
 
     def pivot_with_sum(pivot_kinds, array, pivot_in, &block)
+      pivot_kinds ||= array.map { |h| h[pivot_in] }.uniq.compact
       pivot_kinds.each_with_object({}) do |pivot_kind, memo|
         pivoted_data = array.select { |h| h[pivot_in] == pivot_kind }
         memo[pivot_kind] = if block
