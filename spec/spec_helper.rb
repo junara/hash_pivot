@@ -13,11 +13,11 @@ SimpleCov.start do
   enable_coverage :branch
   primary_coverage :branch
 end
-#
-# if ENV['CI'] == 'true'
-#   require 'codecov'
-#   SimpleCov.formatter = SimpleCov::Formatter::Codecov
-# end
+
+if ENV['CI'] == 'true'
+  require 'codecov'
+  SimpleCov.formatter = SimpleCov::Formatter::Codecov
+end
 require 'hash_pivot'
 
 RSpec.configure do |config|
