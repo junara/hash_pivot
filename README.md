@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/junara/hash_pivot/branch/main/graph/badge.svg?token=NNQ37LG8R7)](https://codecov.io/gh/junara/hash_pivot)
+
 # HashPivot
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/hash_pivot`. To experiment with that code, run `bin/console` for an interactive prompt.
