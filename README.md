@@ -22,6 +22,13 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 Prepare Array of Hash.
 
+id | role | team | age
+-- | -- | -- | --
+1 | guest | rabbit | 1
+2 | guest | mouse | 2
+3 | guest | rabbit | 3
+4 | admin | mouse | 4
+
 ```ruby
  data = [
   { id: 1, role: 'guest', team: 'rabbit', age: 1 },
@@ -43,6 +50,11 @@ HashPivot.pivot(data, :role, :team, %w[rabbit mouse])
 #    "mouse" => [{ :id => 2, :role => "guest", :team => "mouse", :age => 2 }] },
 #  { :role => "admin", "rabbit" => [], "mouse" => [{ :id => 4, :role => "admin", :team => "mouse", :age => 4 }] }]
 ```
+
+role | rabbit | mouse
+-- | -- | --
+guest | {1	guest	rabbit	1} {3	guest	rabbit	3} | {2	guest	mouse	2}
+admin |   | {4	admin	mouse	4}
 
 Grouping by `:role` and pivot in `:team`.
 
@@ -69,6 +81,10 @@ HashPivot.pivot(data, :role, :team, %w[rabbit mouse]) { |array| array.sum { |h| 
 # [{ :role => "guest", "rabbit" => 4, "mouse" => 2 }, { :role => "admin", "rabbit" => 0, "mouse" => 4 }]
 ```
 
+role | rabbit | mouse
+-- | -- | --
+guest | 4 | 2
+admin | 0 | 4
 
 ### Pivot Array of Struct
 
