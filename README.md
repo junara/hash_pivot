@@ -2,9 +2,7 @@
 
 # HashPivot
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/hash_pivot`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Pivot Array of Hash or Array of Struct or ActiveRecord::Relation.
 
 ## Installation
 
@@ -18,7 +16,129 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 ## Usage
 
-TODO: Write usage instructions here
+### Pivot Array of Hash
+
+#### Prepare data
+
+Prepare Array of Hash.
+
+```ruby
+ data = [
+  { id: 1, role: 'guest', team: 'rabbit', age: 1 },
+  { id: 2, role: 'guest', team: 'mouse', age: 2 },
+  { id: 3, role: 'guest', team: 'rabbit', age: 3 },
+  { id: 4, role: 'admin', team: 'mouse', age: 4 }
+]
+```
+
+#### Basic usage
+
+Grouping by `:role` and pivot in `:team`. Pivot column is `rabbit or mouse` .
+
+```ruby
+HashPivot.pivot(data, :role, :team, %w[rabbit mouse])
+
+# [{ :role => "guest",
+#    "rabbit" => [{ :id => 1, :role => "guest", :team => "rabbit", :age => 1 }, { :id => 3, :role => "guest", :team => "rabbit", :age => 3 }],
+#    "mouse" => [{ :id => 2, :role => "guest", :team => "mouse", :age => 2 }] },
+#  { :role => "admin", "rabbit" => [], "mouse" => [{ :id => 4, :role => "admin", :team => "mouse", :age => 4 }] }]
+```
+
+Grouping by `:role` and pivot in `:team`.
+
+Pivot column is nil. This means that pivot column is automatically configured.
+
+```ruby
+HashPivot.pivot(data, :role, :team, nil)
+
+# [{ :role => "guest",
+#    "rabbit" => [{ :id => 1, :role => "guest", :team => "rabbit", :age => 1 }, { :id => 3, :role => "guest", :team => "rabbit", :age => 3 }],
+#    "mouse" => [{ :id => 2, :role => "guest", :team => "mouse", :age => 2 }] },
+#  { :role => "admin", "mouse" => [{ :id => 4, :role => "admin", :team => "mouse", :age => 4 }] }]
+```
+
+#### Pivot with summarize.
+
+Pivot data is summarized by block.
+
+Age is summarized by block.
+
+```ruby
+HashPivot.pivot(data, :role, :team, %w[rabbit mouse]) { |array| array.sum { |h| h[:age] } }
+
+# [{ :role => "guest", "rabbit" => 4, "mouse" => 2 }, { :role => "admin", "rabbit" => 0, "mouse" => 4 }]
+```
+
+
+### Pivot Array of Struct
+
+#### Prepare data
+
+Prepare Array of Struct.
+
+```ruby
+HashPivotUserStruct = Struct.new(:id, :role, :team, :age, keyword_init: true)
+data = [
+  HashPivotUserStruct.new(id: 1, role: 'guest', team: 'rabbit', age: 1),
+  HashPivotUserStruct.new(id: 2, role: 'guest', team: 'mouse', age: 2),
+  HashPivotUserStruct.new({ id: 3, role: 'guest', team: 'rabbit', age: 3 }),
+  HashPivotUserStruct.new({ id: 4, role: 'admin', team: 'mouse', age: 4 })
+]
+```
+
+#### Basic usage
+
+Grouping by `:role` and pivot in `:team`. Pivot column is `rabbit or mouse` .
+
+```ruby
+HashPivot.pivot(data, :role, :team, %w[rabbit mouse], repository: HashPivot::Repository::StructRepository)
+
+# [{ :role => "guest",
+#    "rabbit" => [{ :id => 1, :role => "guest", :team => "rabbit", :age => 1 }, { :id => 3, :role => "guest", :team => "rabbit", :age => 3 }],
+#    "mouse" => [{ :id => 2, :role => "guest", :team => "mouse", :age => 2 }] },
+#  { :role => "admin", "rabbit" => [], "mouse" => [{ :id => 4, :role => "admin", :team => "mouse", :age => 4 }] }]
+```
+
+
+### Pivot Array of ActiveRecord::Relation
+
+#### Prepare data
+
+Prepare Array of ActiveRecord::Relation.
+
+```ruby
+class MigrateSqlDatabase < ActiveRecord::Migration[6.1]
+  def self.up
+    create_table(:hash_pivot_users) do |t|
+      t.string :role
+      t.string :team
+      t.integer :age
+    end
+  end
+end
+```
+
+```ruby
+HashPivotUser.destroy_all
+HashPivotUser.create(:hash_pivot_user, id: 1, role: 'guest', team: 'rabbit', age: 1)
+HashPivotUser.create(:hash_pivot_user, id: 2, role: 'guest', team: 'mouse', age: 2)
+HashPivotUser.create(:hash_pivot_user, id: 3, role: 'guest', team: 'rabbit', age: 3)
+HashPivotUser.create(:hash_pivot_user, id: 4, role: 'admin', team: 'mouse', age: 4)
+```
+
+#### Basic usage
+
+Grouping by `:role` and pivot in `:team`. Pivot column is `rabbit or mouse` .
+
+```ruby
+HashPivot.pivot(data, :role, :team, %w[rabbit mouse], repository: HashPivot::Repository::ActiveRecordRepository)
+
+# [{ :role => "guest",
+#    "rabbit" => [{ :id => 1, :role => "guest", :team => "rabbit", :age => 1 }, { :id => 3, :role => "guest", :team => "rabbit", :age => 3 }],
+#    "mouse" => [{ :id => 2, :role => "guest", :team => "mouse", :age => 2 }] },
+#  { :role => "admin", "rabbit" => [], "mouse" => [{ :id => 4, :role => "admin", :team => "mouse", :age => 4 }] }]
+```
+
 
 ## Development
 
