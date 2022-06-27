@@ -24,15 +24,44 @@ module HashPivot
       end
     end
 
+    private
+
+    # @param [Array,Hash] pivot_kinds
+    # @param [Array] array
+    # @param [Object] pivot_in
+    # @param [Proc] block
+    # @return [Hash]
     def pivot_with_sum(pivot_kinds, array, pivot_in, &block)
       pivot_kinds ||= array.map { |h| h[pivot_in] }.uniq.compact
+      case pivot_kinds
+      when Array
+        pivot_with_sum_with_array_pivot_kinds(pivot_kinds, array, pivot_in, &block)
+      when Hash
+        pivot_with_sum_with_hash_pivot_kinds(pivot_kinds, array, pivot_in, &block)
+      end
+    end
+
+    # @param [Array,Hash] pivot_kinds
+    # @param [Array] array
+    # @param [Object] pivot_in
+    # @param [Proc] block
+    # @return [Hash]
+    def pivot_with_sum_with_array_pivot_kinds(pivot_kinds, array, pivot_in, &block)
       pivot_kinds.each_with_object({}) do |pivot_kind, memo|
         pivoted_data = array.select { |h| h[pivot_in] == pivot_kind }
-        memo[pivot_kind] = if block
-                             yield(pivoted_data)
-                           else
-                             pivoted_data
-                           end
+        memo[pivot_kind] = block ? yield(pivoted_data) : pivoted_data
+      end
+    end
+
+    # @param [Array,Hash] pivot_kinds
+    # @param [Array] array
+    # @param [Object] pivot_in
+    # @param [Proc] block
+    # @return [Hash]
+    def pivot_with_sum_with_hash_pivot_kinds(pivot_kinds, array, pivot_in, &block)
+      pivot_kinds.each_with_object({}) do |(pivot_kind, pivot_label), memo|
+        pivoted_data = array.select { |h| h[pivot_in] == pivot_kind }
+        memo[pivot_label] = block ? yield(pivoted_data) : pivoted_data
       end
     end
   end

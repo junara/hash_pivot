@@ -170,6 +170,26 @@ RSpec.describe HashPivot do
 
     # rubocop:disable RSpec/ExampleLength
 
+    it 'output grouped by team and pivoted in role with translated label' do
+      expect(
+        described_class.pivot(data, :role, :team, { 'rabbit' => 'rabbit label', 'mouse' => 'mouse label' },
+                              repository: HashPivot::Repository::ActiveRecordRepository)
+      ).to eq [
+        { role: 'guest',
+          'rabbit label' => [
+            { id: 1, role: 'guest', team: 'rabbit', age: 1 },
+            { id: 3, team: 'rabbit', role: 'guest', age: 3 }
+          ],
+          'mouse label' => [{ id: 2, team: 'mouse', role: 'guest', age: 2 }] },
+        { role: 'admin',
+          'rabbit label' => [],
+          'mouse label' => [{ id: 4, team: 'mouse', role: 'admin', age: 4 }] }
+      ]
+    end
+    # rubocop:enable RSpec/ExampleLength
+
+    # rubocop:disable RSpec/ExampleLength
+
     it 'output grouped by team and pivoted in role without pivot_kinds' do
       expect(
         described_class.pivot(data, :role, :team, nil,
