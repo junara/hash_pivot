@@ -86,6 +86,26 @@ role | rabbit | mouse
 guest | 4 | 2
 admin | 0 | 4
 
+#### Pivot with summarize and replacing label.
+
+If you give Hash for pivot kinds like this, pivot data is summarized by block and replace with labels.
+
+```ruby
+pivot_kinds = { 'rabbit' => 'RABBIT AGE',
+                'mouse' => 'MOUSE AGE' }
+```
+
+```ruby
+HashPivot.pivot(data, :role, :team, pivot_kinds) { |array| array.sum { |h| h[:age] } }
+
+# [{ :role => "guest", "RABBIT AGE" => 4, "MOUSE AGE" => 2 }, { :role => "admin", "RABBIT AGE" => 0, "MOUSE AGE" => 4 }]
+```
+
+role | RABBIT AGE | MOUSE AGE
+-- | -- | --
+guest | 4 | 2
+admin | 0 | 4
+
 ### Pivot Array of Struct
 
 #### Prepare data
