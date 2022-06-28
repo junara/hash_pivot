@@ -1,5 +1,10 @@
 ## [Unreleased]
 
+## [0.3.1] - 2022-06-28
+
+- Refactoring code
+- Add document url
+
 ## [0.3.0] - 2022-06-26
 
 - Replace Column with label if Hash is given for pivot_kinds.
